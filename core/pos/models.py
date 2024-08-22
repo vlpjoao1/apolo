@@ -30,6 +30,7 @@ class Product(models.Model):
     name = models.CharField(max_length=150, verbose_name='Nombre', unique=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Categoría')
     image = models.ImageField(upload_to='product/%Y/%m/%d', null=True, blank=True, verbose_name='Imagen')
+    is_inventoried = models.BooleanField('¿Es inventariado?',default=True)
     stock = models.IntegerField(default=0, verbose_name='Stock')
     pvp = models.DecimalField(default=0.00, max_digits=9, decimal_places=2, verbose_name='Precio de venta')
 
@@ -146,7 +147,7 @@ class Sale(models.Model):
         return item
 
     def delete(self, using=None, keep_parents=False):
-        for detail in self.saleproduct_set.all():
+        for detail in self.saleproduct_set.filter(product__is_inventoried=True):
             detail.product.stock += detail.cant
             detail.product.save()
         super(Sale, self).delete()

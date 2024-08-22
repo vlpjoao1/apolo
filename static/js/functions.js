@@ -16,7 +16,7 @@ function getCookie(name) {
 
 const csrftoken = getCookie('csrftoken');
 
-function message_error(obj) {-
+function message_error(obj) {
     var html = '';
     if (typeof (obj) === 'object') {
         html = '<ul style="text-align: left;">';

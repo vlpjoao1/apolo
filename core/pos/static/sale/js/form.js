@@ -54,6 +54,9 @@ var sale = {
                     targets: [-4],
                     class: 'text-center',
                     render: function (data, type, row) {
+                        if (!row.is_inventoried) {
+                            return '<span class="badge badge-secondary"> Sin Stock</span>';
+                        }
                         return '<span class="badge badge-secondary">' + data + '</span>';
                     }
                 },
@@ -94,7 +97,8 @@ var sale = {
 
                 $(row).find('input[name="cant"]').TouchSpin({
                     min: 1,
-                    max: data.stock,
+                    // Si es inventariado Maximo = stock, sino lo que quiera
+                    max: data.is_inventoried ? row.stock : 10000,
                     step: 1
                 });
 
@@ -239,7 +243,7 @@ $(function () {
             if (!Number.isInteger(repo.id)) {
                 return repo.text;
             }
-
+            var stock = repo.is_inventoried ? repo.stock : 'Sin Stock';
             return $(
                 '<div class="wrapper container">' +
                 '<div class="row">' +
@@ -250,7 +254,7 @@ $(function () {
                 //'<br>' +
                 '<p style="margin-bottom: 0;">' +
                 '<b>Nombre:</b> ' + repo.full_name + '<br>' +
-                '<b>Stock:</b> ' + repo.stock + '<br>' +
+                '<b>Stock:</b> ' + stock + '<br>' +
                 '<b>PVP:</b> <span class="badge badge-warning">$' + repo.pvp + '</span>' +
                 '</p>' +
                 '</div>' +
@@ -344,6 +348,9 @@ $(function () {
                     targets: [-3],
                     class: 'text-center',
                     render: function (data, type, row) {
+                        if (!row.is_inventoried) {
+                            return '<span class="badge badge-secondary"> Sin Stock</span>';
+                        }
                         return '<span class="badge badge-secondary">' + data + '</span>';
                     }
                 },
