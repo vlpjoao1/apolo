@@ -12,7 +12,8 @@
                     <input type="hidden" name="next" value="{{ next }}">
                     {% csrf_token %}
                     <div class="input-group mb-3">
-                        {{ form.username|add_class:'form-control'|attr:'autocomplete:off'|attr:'placeholder:Ingrese su username' }}
+{#                      {{ form.username|add_class:'form-control'|attr:'autocomplete:off'|attr:'placeholder:Ingrese su username' }}#}
+                        {{ form.username }}
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-envelope"></span>
@@ -20,7 +21,8 @@
                         </div>
                     </div>
                     <div class="input-group mb-3">
-                        {{ form.password|add_class:'form-control'|attr:'autocomplete:off'|attr:'placeholder:Ingrese su password' }}
+{#                      {{ form.password|add_class:'form-control'|attr:'autocomplete:off'|attr:'placeholder:Ingrese su password' }}#}
+                        {{ form.password }}
                         <div class="input-group-append">
                             <div class="input-group-text">
                                 <span class="fas fa-lock"></span>
@@ -36,7 +38,8 @@
                         </div>
                     </div>
                     <p class="text-center mt-2" style="font-size: 13px;">
-                        Si no recuerdas tu contraseña puedes resetearla dando click <a href="{% url 'reset_password' %}">aqui </a>
+                        Si no recuerdas tu contraseña puedes resetearla dando click <a
+                            href="{% url 'reset_password' %}">aqui </a>
                     </p>
                 </form>
             </div>
@@ -44,11 +47,13 @@
         <script type="application/javascript">
             {% if form.errors %}
                 var errors = '';
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        errors += '{{ error }}\n';
-                    {% endfor %}
-                {% endfor %}
+                /*Estos errores son del template, de sus validaciones*/
+{#                {% for field in form %}#}
+{#                    {% for error in field.errors %}#}
+{#                        errors += '{{ error }}\n';#}
+{#                    {% endfor %}#}
+{#                {% endfor %}#}
+                /*Estos errores provienen la vista*/
                 {% for error in form.non_field_errors %}
                     errors += '{{ error }}\n';
                 {% endfor %}

@@ -4,7 +4,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from django.contrib.auth import login, logout
-from django.contrib.auth.forms import AuthenticationForm
+# from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect
@@ -15,8 +15,28 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import FormView, RedirectView
 
 from config import settings
-from core.login.forms import ResetPasswordForm, ChangePasswordForm
+from core.login.forms import ResetPasswordForm, ChangePasswordForm, AuthenticationForm
 from core.user.models import User
+
+
+class LoginAPIFormView(FormView):
+    template_name = 'login/login.html'
+    form_class = AuthenticationForm
+    success_url = settings.LOGIN_REDIRECT_URL
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(settings.LOGIN_REDIRECT_URL)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Iniciar sesión'
+        return context
+
+    def form_valid(self, form):  # Execute after data was validated
+        login(self.request, user=form.get_user())
+        return super(LoginAPIFormView, self).form_valid(form)
 
 
 class LoginFormView(LoginView):
@@ -33,24 +53,24 @@ class LoginFormView(LoginView):
         return context
 
 
-class LoginFormView2(FormView):
-    form_class = AuthenticationForm
-    template_name = 'login/login.html'
-    success_url = reverse_lazy(settings.LOGIN_REDIRECT_URL)
-
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return HttpResponseRedirect(self.success_url)
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        login(self.request, form.get_user())
-        return HttpResponseRedirect(self.success_url)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = 'Iniciar sesión'
-        return context
+# class LoginFormView2(FormView):
+#     form_class = AuthenticationForm
+#     template_name = 'login/login.html'
+#     success_url = reverse_lazy(settings.LOGIN_REDIRECT_URL)
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         if request.user.is_authenticated:
+#             return HttpResponseRedirect(self.success_url)
+#         return super().dispatch(request, *args, **kwargs)
+#
+#     def form_valid(self, form):
+#         login(self.request, form.get_user())
+#         return HttpResponseRedirect(self.success_url)
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['title'] = 'Iniciar sesión'
+#         return context
 
 
 class LogoutView(RedirectView):
