@@ -16,6 +16,7 @@ from django.views.generic import FormView, RedirectView
 
 from config import settings
 from core.login.forms import ResetPasswordForm, ChangePasswordForm, AuthenticationForm
+from core.security.models import AccessUser
 from core.user.models import User
 
 
@@ -36,6 +37,7 @@ class LoginAPIFormView(FormView):
 
     def form_valid(self, form):  # Execute after data was validated
         login(self.request, user=form.get_user())
+        AccessUser(user=form.get_user()).save()
         return super(LoginAPIFormView, self).form_valid(form)
 
 

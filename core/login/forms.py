@@ -40,7 +40,7 @@ class AuthenticationForm(forms.Form):
         return User.objects.get(username=username)
 
     def get_or_crete_user_api(self, user, password):
-        response = {'resp': False, 'msg':'No se ha podido iniciar sesión'}
+        response = {'resp': False, 'msg':'No se ha podido iniciar sesión '}
         try:
             payload = {
                 'username': user,
