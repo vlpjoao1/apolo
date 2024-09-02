@@ -1,7 +1,11 @@
+from datetime import datetime
+
 import requests
 from django import forms
 from django.contrib.auth import authenticate
 
+from core.security.choices import LOGIN_TYPE
+from core.security.models import AccessUser
 from core.user.models import User
 
 
@@ -25,22 +29,37 @@ class AuthenticationForm(forms.Form):
             raise forms.ValidationError('Ingrese un username válido.')
         elif not password:
             raise forms.ValidationError('Ingrese una contraseña válida.')
-        response_api = self.get_or_crete_user_api(user=username, password=password)
-        if not response_api.get('resp'):
-            raise forms.ValidationError(response_api.get('msg'))
-        # user = authenticate(username=username, password=password)
-        # if user is None:
-        #     raise forms.ValidationError('Por favor introduzca el nombre de usuario y la clave'
-        #                                 ' correctos para una cuenta de personal. Observe que '
-        #                                 'ambos campos pueden ser sensibles a mayúsculas.')
-        return cleaned_data
+        # response_api = self.get_or_crete_user_api(user=username, password=password)
+        # if not response_api.get('resp'):
+        #     raise forms.ValidationError(response_api.get('msg'))
+        queryset = User.objects.filter(username=username)
+        if queryset.exists():
+            user = queryset[0]
+            if not user.is_active:
+                raise forms.ValidationError('El usuario ha sido bloqueado, comuníquese con su administrador.')
+            if authenticate(username=username, password=password) is None:
+                AccessUser(user=user, type=LOGIN_TYPE[1][0]).save()
+                int_fall = user.accessuser_set.filter(type=LOGIN_TYPE[1][0], date_joined=datetime.now().date()).count()
+                if int_fall > 2:
+                    user.is_active = False
+                    user.save()
+                    raise forms.ValidationError('El usuario ha superado el límite de intentos fallidos en un día.')
+                int_res = 3 - int_fall
+                raise forms.ValidationError(f"La contraseña ingresada es incorrecta, "
+                                            f"le {'quedan' if int_res > 1 else 'queda'} {int_res} {'intentos' if int_res >1 else 'intento'}."
+                                            f"Si supera los 3 intentos, el usuario será bloqueado.")
+            AccessUser(user=user).save()
+            return cleaned_data
+        raise forms.ValidationError('Por favor introduzca el nombre de usuario y la clave'
+                                    ' correctos para una cuenta de personal. Observe que '
+                                    'ambos campos pueden ser sensibles a mayúsculas.')
 
     def get_user(self):
         username = self.cleaned_data.get('username')
         return User.objects.get(username=username)
 
     def get_or_crete_user_api(self, user, password):
-        response = {'resp': False, 'msg':'No se ha podido iniciar sesión '}
+        response = {'resp': False, 'msg': 'No se ha podido iniciar sesión '}
         try:
             payload = {
                 'username': user,

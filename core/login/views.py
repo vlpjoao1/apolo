@@ -37,7 +37,7 @@ class LoginAPIFormView(FormView):
 
     def form_valid(self, form):  # Execute after data was validated
         login(self.request, user=form.get_user())
-        AccessUser(user=form.get_user()).save()
+        # AccessUser(user=form.get_user()).save()
         return super(LoginAPIFormView, self).form_valid(form)
 
 

@@ -4,6 +4,7 @@ from crum import get_current_request
 from django.db import models
 from django.forms import model_to_dict
 
+from core.security.choices import LOGIN_TYPE
 from core.user.models import User
 
 
@@ -13,6 +14,7 @@ class AccessUser(models.Model):
     date_joined = models.DateField(default=datetime.now)
     time = models.TimeField(default=datetime.now)
     ip_address = models.CharField(max_length=50)
+    type = models.CharField(max_length=20, choices=LOGIN_TYPE, default=LOGIN_TYPE[0][0])
 
     def __str__(self):
         return self.ip_address
@@ -27,6 +29,7 @@ class AccessUser(models.Model):
 
     def toJSON(self):
         item = model_to_dict(self)
+        item['type'] = {'id':self.type, 'name':self.get_type_display()}
         item['user'] = self.user.toJSON()
         item['date_joined'] = self.date_joined.strftime('%Y-%m-%d')
         item['time'] = self.time.strftime('%H:%M:%S')

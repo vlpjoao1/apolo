@@ -32,6 +32,7 @@ var access_users = {
                 {"data": "date_joined"},
                 {"data": "time"},
                 {"data": "ip_address"},
+                {"data": "type.name"},
                 {"data": "id"},
             ],
             order: [[2, "desc"], [3, "desc"]],
@@ -42,6 +43,18 @@ var access_users = {
                     orderable: false,
                     render: function (data, type, row) {
                         return '<a href="' + pathname + 'delete/' + row.id + '/" class="btn btn-danger btn-xs btn-flat"><i class="fas fa-trash-alt"></i></a>';
+                    }
+                },
+                {
+                    targets: [-2],
+                    class: 'text-center',
+                    render: function (data, type, row) {
+                        var name = row.type.name;
+                        if (row.type.id === 'success') {
+                            return '<span class="badge badge-success badge-pill">' + name + '</span>'
+                        } else{
+                            return '<span class="badge badge-danger badge-pill">' + name + '</span>'
+                        }
                     }
                 },
             ],
