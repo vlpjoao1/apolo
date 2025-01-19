@@ -69,8 +69,8 @@ class SaleCreateView(ExistsCompanyMixin, ValidatePermissionRequiredMixin, Create
             action = request.POST['action']
             if action == 'search_products':
                 data = []
-                ids_exclude = json.loads(request.POST['ids'])
-                term = request.POST['term'].strip()
+                ids_exclude = json.loads(request.POST['ids'])  # Ids que ya estan en la tabla
+                term = request.POST['term'].strip()  # termino de búsqueda
                 products = Product.objects.filter(Q(stock__gt=0) | Q(is_inventoried=False))
                 if len(term):
                     products = products.filter(name__icontains=term)

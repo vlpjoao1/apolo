@@ -15,7 +15,7 @@ var sale = {
     calculateInvoice: function () {
         var subtotal = 0.00;
         var iva = $('input[name="iva"]').val();
-        this.details.products.forEach(function (value, index, array) {
+        this.details.products.forEach(function (value, index, arraay) {
             value.index = index;
             value.cant = parseInt(value.cant);
             value.subtotal = value.cant * parseFloat(value.pvp);
@@ -135,7 +135,7 @@ $(function () {
             },
             data: function (params) {
                 return {
-                    term: params.term,
+                    term: params.term,  // termino de busqueda
                     action: 'search_client'
                 };
             },
