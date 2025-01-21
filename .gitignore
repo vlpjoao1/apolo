@@ -6,7 +6,6 @@ __pycache__/
 */migrations/*
 **/migrations/*
 */logs/*
-config/*
 staticfiles/*
 db.sqlite3
 media
